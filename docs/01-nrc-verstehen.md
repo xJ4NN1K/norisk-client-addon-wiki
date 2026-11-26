@@ -6,6 +6,20 @@ NoRisk Client (NRC) ist ein kostenloses Minecraft-Ökosystem mit Launcher und Cl
 
 Aktuelle Produkt- und Download-Informationen stehen auf [norisk.gg](https://norisk.gg/) und [norisk.gg/downloads](https://norisk.gg/downloads). Funktionen, Versionen und Plattformunterstützung ändern sich. Für technische Aussagen zählt immer die ausgewählte Minecraft-Version und das zugehörige Profil.
 
+## NRC-Funktionen auf einen Blick
+
+Die genaue Auswahl hängt von Minecraft-Version, Betriebssystem und Profil ab. Die offizielle Website stellt aktuell folgende Bereiche des Java-Clients und Launchers heraus:
+
+- **Profile und Versionen:** Profile halten Spielversion, Mods, Einstellungen und Welten getrennt. So kann man Builds testen, ohne das Hauptprofil zu verändern.
+- **Mod-Verwaltung:** Der Launcher bewirbt eine gemeinsame Suche nach Mods aus Modrinth und CurseForge und löst passende Loader, Versionen und Abhängigkeiten für das ausgewählte Profil auf.
+- **Module und HUD:** Eingebaute Client-Module bieten optionale Spiel- und Anzeige-Funktionen. Der HUD-Editor ordnet sichtbare Anzeigen auf dem Bildschirm an. Diese internen Module sind nicht automatisch eine öffentliche Addon-API.
+- **Cosmetics:** Outfits, Capes und Emotes ändern die Darstellung. Welche Inhalte verfügbar oder sichtbar sind, hängt von Konto, Client-Version und Shop-Angebot ab.
+- **Social-Funktionen:** Freunde, In-Game-Chat, Hosted Worlds und McReal verbinden Spielende. Hosted Worlds ermöglicht, eine eigene Welt für Freunde zugänglich zu machen; prüfe die aktuellen Dienstbedingungen und nicht die Annahme, es handle sich um einen dauerhaft laufenden eigenen Server.
+- **Minigames:** Die Website zeigt kleine integrierte Arcade-Spiele als Teil des Ökosystems.
+- **NoRisk+:** Optionales kostenpflichtiges Angebot für Zusatzvorteile. Preise und Vorteile können sich ändern; die Grundnutzung des Launchers/Clients ist laut offizieller Website kostenlos.
+
+Die [Hauptseite](https://norisk.gg/) beschreibt die aktuell angebotenen Funktionen. Die [Download-Seite](https://norisk.gg/downloads) listet unterstützte Desktop-Systeme. Für technische Addons sind diese Produktbeschreibungen eine Orientierung, keine API-Dokumentation.
+
 ## Vier Dinge, die oft verwechselt werden
 
 | Begriff | Bedeutung |
