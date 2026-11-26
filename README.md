@@ -29,6 +29,12 @@ Ein deutschsprachiger Praxisleitfaden für eigene Fabric-Mods, die mit dem NoRis
 - NRC-Module, HUDs, Menüs, Badges und optionale Dialoge als versionsabhängige Community-Integrationen.
 - NRC-Konfigurationsdaten und Server-Mappings als getrennte Beitragswege.
 
-Es ist **kein** offizieller SDK-Vertrag und ersetzt keine Dokumentation, Lizenz oder aktuelle Build-Dateien. Die lokalen Dateien aus dem ursprünglichen Ordner enthalten zusätzliche Recherche und Beispiele; bei widersprüchlichen Details gelten die offiziellen Projektquellen und die tatsächliche Zielversion.
+Es ist **kein** offizieller SDK-Vertrag und ersetzt keine Dokumentation, Lizenz oder aktuelle Build-Dateien. Bei widersprüchlichen Details gelten die offiziellen Projektquellen und die tatsächliche Zielversion.
+
+## GitHub
+
+Repository: [xJ4NN1K/norisk-client-addon-wiki](https://github.com/xJ4NN1K/norisk-client-addon-wiki)
+
+Zum lokalen Klonen: `git clone https://github.com/xJ4NN1K/norisk-client-addon-wiki.git`
 
 
