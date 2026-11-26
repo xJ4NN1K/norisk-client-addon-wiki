@@ -1,0 +1,15 @@
+{
+  "required": true,
+  "minVersion": "0.8",
+  "package": "gg.norisk.addon.popup.mixin",
+  "compatibilityLevel": "JAVA_21",
+  "plugin": "gg.norisk.addon.popup.mixin.NoRiskSafeMixinPlugin",
+  "mixins": [],
+  "client": [
+    "TitleScreenMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  }
+}
+

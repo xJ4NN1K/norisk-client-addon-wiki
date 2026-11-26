@@ -1,40 +1,32 @@
 # NoRisk Client Addon- und Modding-Wiki
 
-Ein deutschsprachiger Praxisleitfaden für eigene Fabric-Mods, die mit dem NoRisk Client (NRC) zusammenarbeiten. Er erklärt, was NRC ist, wie du eine Entwicklungsumgebung vorbereitest, Module und HUDs entwirfst, NRC-APIs vorsichtig anbindest und Mods testest und verteilst.
+Ein leicht navigierbares Mini-Wiki für eigene Fabric-Mods und NRC-Module. Es enthält kurze Anleitungen pro Aufgabe, Ressourcen zum Entwickeln und Veröffentlichen sowie ein Archiv der bisherigen Recherche und Beispielprojekte.
 
-> **Wichtig:** NoRisk Client ist ein sich ändernder Client mit mehreren Minecraft-Versionen und Profilvarianten. Eine interne NRC-Klasse ist keine stabile öffentliche Addon-API. Codebeispiele für NRC-Module sind deshalb versionsgebundene Startpunkte und müssen gegen genau die NRC-Version geprüft werden, für die du baust. „Funktioniert in jeder Version“ lässt sich ohne offizielle, versionierte Addon-Schnittstelle nicht versprechen.
+## Schnell zur Anleitung
 
-## Einstieg
+- [Wiki-Startseite](docs/index.html) – Karten mit allen Themen
+- [Eigenes Modul erstellen](docs/module-erstellen.html)
+- [Slider, Toggle und Werte](docs/slider-einstellungen.html)
+- [HUD, UI, ADDON-Badge und Popup](docs/hud-ui-popup.html)
+- [Projekt bauen und Kompatibilität testen](docs/build-kompatibilitaet.html)
+- [Auf Modrinth oder CurseForge veröffentlichen](docs/veroeffentlichen.html)
+- [Offizielle Ressourcen und Werkzeuge](docs/ressourcen.html)
+- [Längere technische Artikel](docs/01-nrc-verstehen.md)
+- [Originalnotizen und Beispiele](archive/README.md)
 
-1. [NRC verstehen](docs/01-nrc-verstehen.md)
-2. [Werkzeuge und Abhängigkeiten installieren](docs/02-entwicklungsumgebung.md)
-3. [Ein eigenes Modul erstellen](docs/03-eigenes-modul.md)
-4. [UI, Werte, HUD und Konfiguration](docs/04-ui-hud-konfiguration.md)
-5. [Kompatibilität, Tests und Fehlersuche](docs/05-kompatibilitaet-und-fehlersuche.md)
-6. [Veröffentlichen und rechtliche Hinweise](docs/06-veroeffentlichen.md)
-7. [Offizielle Quellen und lokale Wissensbasis](docs/QUELLEN.md)
+## Online-Wiki
 
-## Schnellstart
+GitHub Pages: https://xj4nnik.github.io/norisk-client-addon-wiki/
 
-- Installiere ein JDK passend zur Minecraft-/Fabric-Zielversion, Git und IntelliJ IDEA Community.
-- Starte von einem Fabric-Mod-Template und nutze dessen `gradlew`-Wrapper. Fabric Loom, Loader und API-Versionen gehören zusammen und müssen auf die Zielversion abgestimmt sein.
-- Lege NRC-spezifische Abhängigkeiten nur aus einer nachvollziehbaren, rechtmäßig nutzbaren Quelle bei. Prüfe zuerst, ob der gewünschte Effekt mit der normalen Fabric-API oder einer öffentlichen NRC-Schnittstelle möglich ist.
-- Baue mit `./gradlew build` bzw. `.\gradlew.bat build` und teste in einer separaten NRC-Instanz derselben Minecraft-Version.
-- Füge NRC-Klassen nicht beim frühen Mod-Start unbedacht in statische Felder oder Mixin-Targets ein. Sie können geladen werden, bevor optionale Ziele verfügbar sind.
+## Wichtiger API-Hinweis
 
-## Was dieses Wiki abdeckt
+NoRisk-Client-interne Modul-, HUD- und UI-Klassen sind nicht automatisch eine stabile öffentliche Addon-API. Prüfe alle Integrationspunkte im konkreten Minecraft-/Fabric-/NRC-Build. Eine Anleitung kann keine pauschale Kompatibilität mit jeder Version versprechen.
 
-- NRC Launcher, Profile, Java-Client, eingebaute Module, Cosmetics und weitere sichtbare Funktionen auf hoher Ebene.
-- Eigene Fabric-Client-Mods, die sich in NRC integrieren.
-- NRC-Module, HUDs, Menüs, Badges und optionale Dialoge als versionsabhängige Community-Integrationen.
-- NRC-Konfigurationsdaten und Server-Mappings als getrennte Beitragswege.
+## Lokale Entwicklung
 
-Es ist **kein** offizieller SDK-Vertrag und ersetzt keine Dokumentation, Lizenz oder aktuelle Build-Dateien. Bei widersprüchlichen Details gelten die offiziellen Projektquellen und die tatsächliche Zielversion.
+```powershell
+git clone https://github.com/xJ4NN1K/norisk-client-addon-wiki.git
+```
 
-## GitHub
-
-Repository: [xJ4NN1K/norisk-client-addon-wiki](https://github.com/xJ4NN1K/norisk-client-addon-wiki)
-
-Zum lokalen Klonen: `git clone https://github.com/xJ4NN1K/norisk-client-addon-wiki.git`
-
+Öffne danach `docs/index.html` im Browser oder nutze den Online-Link. Das Repo enthält technische Notizen und Beispiele; private/proprietäre NRC-JARs, verarbeitete Mod-Binaries und erzeugte `build/`-Ordner werden nicht verteilt.
 

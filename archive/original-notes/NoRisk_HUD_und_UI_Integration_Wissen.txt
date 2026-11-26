@@ -1,0 +1,211 @@
+================================================================================
+NORISK CLIENT - ALLGEMEINE INFOS ZU HUD-ZUGRIFF & UI-BUTTON-INTEGRATION
+================================================================================
+(Erstellt aus den Erkenntnissen von NRC-BetterHud-Editor-Addon - als Vorlage
+fuer alle zukuenftigen NoRisk Client Addons & Mods)
+
+--------------------------------------------------------------------------------
+1. ZUGRIFF AUF ALLE HUD-ELEMENTE IN NORISK CLIENT
+--------------------------------------------------------------------------------
+
+A) NoRisk-Client-eigene HUDs auslesen (`ModuleProvider` & `HudComponentRegistry`)
+--------------------------------------------------------------------------------
+Um alle nativen HUD-Elemente von NoRisk Client programmatisch zu finden,
+zu lesen oder zu steuern, gibt es zwei zentrale Quellen:
+1. `gg.norisk.ui.modules.api.ModuleProvider.Companion.getInstance().getModules()`
+   -> Enthaelt alle registrierten `ModuleEntry`-Objekte. Das eigentliche Modul
+      steckt in `entry.getValueHolder()`.
+   -> Pruefe auf `AbstractHud`, `IMultiDraggableElements` oder `module.isDraggable()`.
+2. `gg.norisk.ui.v2.hud.components.HudComponentRegistry.INSTANCE.getHuds()`
+   -> Enthaelt alle registrierten `AbstractHud`-Instanzen.
+
+Code-Beispiel (Discovery & Extraktion von `DraggableElement`):
+```java
+import gg.norisk.ui.api.hud.AbstractHud;
+import gg.norisk.ui.api.hud.IMultiDraggableElements;
+import gg.norisk.ui.api.module.Module;
+import gg.norisk.ui.components.modules.DraggableElement;
+import gg.norisk.ui.modules.api.ModuleEntry;
+import gg.norisk.ui.modules.api.ModuleProvider;
+import gg.norisk.ui.v2.hud.components.HudComponentRegistry;
+
+for (ModuleEntry entry : ModuleProvider.Companion.getInstance().getModules()) {
+    if (!(entry.getValueHolder() instanceof Module module)) continue;
+    if (module instanceof AbstractHud || module instanceof IMultiDraggableElements || module.isDraggable()) {
+        List<DraggableElement> elements = extractDraggables(module);
+        // ... weiterverarbeiten ...
+    }
+}
+
+for (AbstractHud hud : HudComponentRegistry.INSTANCE.getHuds()) {
+    // ... ebenfalls pruefen ...
+}
+
+private static List<DraggableElement> extractDraggables(Module module) {
+    List<DraggableElement> list = new ArrayList<>();
+    if (module instanceof IMultiDraggableElements multi) {
+        List<DraggableElement> multiList = multi.getDraggableElements();
+        if (multiList != null) list.addAll(multiList);
+    } else if (module instanceof AbstractHud hud) {
+        DraggableElement single = hud.toDraggableElement();
+        if (single != null) list.add(single);
+    }
+    return list;
+}
+```
+
+Wichtige APIs am `DraggableElement` / `AbstractHud`:
+- `draggable.getAnchorPointGetter()` / `getAnchorPointSetter()` -> Position & Anker (`AnchorPointPosition`)
+- `draggable.getScaleGetter()` / `getScaleSetter()` -> Skalierung (`float`)
+- `module.isEnabled()` / `module.setEnabled(boolean)`
+- `hud.isHudEnabled()`
+- WICHTIG fuer eigenes `DraggableElement`: Der letzte Parameter `stickyPositionGetter`
+  muss `null` sein, sonst blockiert `DraggableModuleEditWrapper.onMouseDrag` das
+  Verschieben per Maus sofort!
+
+B) Verzoegerte Initialisierung der NRC-Bridge (verhindert Mixin-Crashes!)
+--------------------------------------------------------------------------------
+Greife NIEMALS zu frueh (z. B. direkt im `onInitializeClient` oder ueber ein
+hartes Mixin auf `Module`) auf `ModuleProvider` / `Module` zu, da sonst
+`MixinTargetAlreadyLoadedException` entstehen kann (besonders bei Standalone/Mini).
+Stattdessen:
+1. Im `ClientModInitializer.onInitializeClient()` nur erkennen, ob NRC geladen
+   ist (Mod-IDs `nrcclient`, `nrcmini`, `nrcstandalone`, `nrcabstraction` oder
+   Klassen-Check `gg/norisk/ui/api/module/Module.class`).
+2. Im ersten `ClientTickEvents.END_CLIENT_TICK` ueber `Class.forName(...)` eine
+   getrennte Bridge-Klasse (`NoRiskBridge.register()`) laden. So startet die Mod
+   auch ohne NoRisk Client sauber und kann das bekannte NoRisk-Hinweis-Popup zeigen.
+
+Code-Beispiel:
+```java
+ClientTickEvents.END_CLIENT_TICK.register(client -> {
+    if (NRC_PRESENT && !nrcInitialized) {
+        nrcInitialized = true;
+        Class<?> bridge = Class.forName("gg.norisk.addon.myaddon.NoRiskBridge");
+        bridge.getMethod("register").invoke(null);
+    }
+});
+```
+
+C) Zugriff auf Minecraft Vanilla HUDs (Fabric HUD API)
+--------------------------------------------------------------------------------
+Um Minecrafts eigene Standard-HUDs (Hotbar, Herzen, Hunger, Ruestung, XP-Leiste,
+Crosshair, Scoreboard, Bossbar, Effekte, Chat, Tab-Liste) zu verschieben,
+auszublenden oder zu skalieren:
+- Ueber `HudElementRegistry.replaceElement(VanillaHudElements.HOTBAR, original -> ...)`
+  das Original-`HudElement` abfangen und speichern.
+- Beim Rendern per `graphics.pose()` (pushMatrix -> translate -> scale -> translate
+  auf Basis von `AnchorPointPosition.getAlignedPos(...)`) verschieben/skalieren
+  und danach `original.extractRenderState(graphics, deltaTracker)` aufrufen.
+
+
+--------------------------------------------------------------------------------
+2. BUTTONS & EINSTIEGSPUNKTE IN DIE NORISK CLIENT UI INTEGRIEREN
+--------------------------------------------------------------------------------
+
+Alle Buttons rufen am besten eine gemeinsame Launcher-Methode auf (z. B.
+`MyScreenLauncher.open(parent)`), damit jede Stelle denselben Screen oeffnet.
+
+A) Eigenes Modul + Navbar-Button + ScreenNavigationRegistry
+--------------------------------------------------------------------------------
+1. `ModuleProvider.Companion.register(new MyModule());`
+2. `ScreenNavigationRegistry.INSTANCE.register("Mein Modul", () -> { ... });`
+3. Im Modul (`extends Module`) zwei Methoden ueberschreiben:
+   - `onLeftClick()` -> oeffnet direkt deinen Screen, wenn man die Karte anklickt.
+   - `buildNavbarActions(FlowLayout navbar)` -> fuegt einen dauerhaften Button
+     an der Seite des Modulmenues hinzu.
+
+Code-Beispiel:
+```java
+@Override
+public Function0<Unit> onLeftClick() {
+    return () -> {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc != null && mc.gui != null) MyLauncher.open(mc.gui.screen());
+        return Unit.INSTANCE;
+    };
+}
+
+@Override
+public void buildNavbarActions(FlowLayout navbar) {
+    super.buildNavbarActions(navbar);
+    var button = UIComponents.button(Component.literal("✎ Mein Screen"), ignored -> {
+        Minecraft mc = Minecraft.getInstance();
+        if (mc != null && mc.gui != null) MyLauncher.open(mc.gui.screen());
+    });
+    button.horizontalSizing(Sizing.fill(100));
+    button.verticalSizing(Sizing.fixed(24));
+    navbar.child(button);
+}
+```
+
+B) Quick-Access Icon-Leiste im R-Shift Overlay (`V3RightShiftOverlay`)
+--------------------------------------------------------------------------------
+Um ein Icon direkt in die untere/obere Quick-Access-Icon-Leiste von
+`V3RightShiftOverlay` zu haengen:
+- `@Pseudo @Mixin(value = V3RightShiftOverlay.class, remap = false)`
+- `@Invoker(value = "createIconButton", remap = false)` nutzt NRC's eigenen
+  Button-Builder (inkl. Icon, Hover-Label, Animation).
+- `@Inject(method = "buildIconRow()Lgg/norisk/owolib/owo/ui/container/FlowLayout;", at = @At("RETURN"), remap = false)`
+  sucht den eigenen `ModuleEntry` in `ModuleProvider` und haengt ihn mit
+  `row.child(createIconButton(entry, entry.getName()))` an.
+- Falls du das Oeffnen abfangen willst: `@Redirect` auf
+  `ScreenNavigationRegistry.open(String)` in `createIconButton$lambda$8`
+  (mit `require = 0` zur Sicherheit bei Updates).
+
+C) Sidebar-Button im R-Shift Menue (`RightShiftMenuV3Screen`)
+--------------------------------------------------------------------------------
+Um einen Button direkt in die linke Sidebar (z. B. unter `"emotes"`) zu setzen:
+- `@Pseudo @Mixin(value = RightShiftMenuV3Screen.class, remap = false)`
+- `@Redirect` auf `createSidebarButton$default(...)` innerhalb von `build(FlowLayout)`:
+  Wenn `"emotes".equals(id)`, das Original-FlowLayout in einen vertikalen
+  Container packen und darunter ein `IconButtonComponent` + `LabelComponent`
+  anfuegen.
+
+Code-Beispiel:
+```java
+FlowLayout original = createSidebarButton$default(screen, id, label, icon, action, mask, marker);
+if (!"emotes".equals(id)) return original;
+
+FlowLayout group = UIContainers.verticalFlow(Sizing.fixed(48), Sizing.content());
+group.horizontalAlignment(HorizontalAlignment.CENTER);
+group.gap(2);
+group.child(original);
+
+FlowLayout customBtn = UIContainers.verticalFlow(Sizing.fixed(48), Sizing.content());
+customBtn.horizontalAlignment(HorizontalAlignment.CENTER);
+customBtn.child(new IconButtonComponent(iconId, Size.square(20), () -> {
+    // Screen oeffnen
+    return Unit.INSTANCE;
+}));
+customBtn.child(new LabelComponent(Component.literal("Mein Addon")).shadow(true).scale(0.6f));
+group.child(customBtn);
+return group;
+```
+
+D) Rotes "ADDON"-Badge statt "NEW" auf der Modulkarte
+--------------------------------------------------------------------------------
+In `RightShiftMenuV3Screen` per `@Inject(method = "createModuleCard", at = @At("RETURN"), remap = false)`
+den `LabelComponent`-Text `"new"` / `"neu"` suchen und auf `Component.literal("§c§lADDON")`
+setzen (siehe `ModuleCardBadgeMixin.java`).
+
+E) Alte Editor-Overlays im R-Shift Menue ausblenden (falls eigenes HUD-System)
+--------------------------------------------------------------------------------
+In `RightShiftMenuV3Screen` lassen sich die eingebauten NRC-HUD-Wrapper mit
+`@Inject(method = "addDraggableHuds()V", at = @At("HEAD"), cancellable = true, remap = false, require = 0)`
+und `rebuildDraggableHuds()V` via `ci.cancel()` deaktivieren.
+
+
+--------------------------------------------------------------------------------
+3. WICHTIGE HINWEISE FUER KOMPATIBILITAET (LAUNCHER / STANDALONE / MINI / UPDATES)
+--------------------------------------------------------------------------------
+- Alle Mixins auf NRC-Klassen IMMER mit `@Pseudo`, `remap = false` und bei
+  optionalen Targets/Lambdas mit `require = 0` versehen, damit Updates oder
+  Mini/Standalone-Versionen keinen Start-Crash ausloesen.
+- `MouseDragEvent.x()` / `y()` in owo-lib sind absolute Bildschirmkoordinaten
+  (nicht relativ zur Komponente!).
+- `Hud.suppress = true` in `gg.norisk.owolib.owo.ui.hud.Hud` pausiert das
+  normale In-Game-HUD waehrend ein eigener Editor offen ist (beim Schliessen
+  wieder auf `false` setzen + `HudManager.INSTANCE.rebuildHud()`).
+================================================================================
+

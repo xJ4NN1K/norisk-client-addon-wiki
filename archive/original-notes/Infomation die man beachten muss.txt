@@ -1,0 +1,58 @@
+Es soll für jede Version funktionieren das heißt, vom launcher, oder die mods standalone oder mini - auch wenn es mal ein update hat soll es noch gehen.
+die mods sollen auch starten wenn da nicht das passende ist jededoch sollen sie dann anzeigen, das die mod nur mit Norisk Client funktioniert & da gibt's 3 Buttons, einmal download mit den link norisk.gg dann nicht erneut anzeigen und okay, bitte beachte das dafür jede mod das selbe design hat.
+
+Beachte auch das jedes neues module oben am module den addon text bekommen sollen! dort wo manche NEW stehen haben!
+
+Mache das meine mods mit mini oder standalone mods auch funktionieren und nicht sowas entsteht
+"
+Uncaught exception in thread "main"
+java.lang.reflect.InvocationTargetException
+	at java.base/jdk.internal.reflect.DirectMethodHandleAccessor.invoke(Unknown Source)
+	at java.base/java.lang.reflect.Method.invoke(Unknown Source)
+	at com.modrinth.theseus.MinecraftLaunch.relaunch(MinecraftLaunch.java:61)
+	at com.modrinth.theseus.MinecraftLaunch.main(MinecraftLaunch.java:28)
+Caused by: java.lang.RuntimeException: Mixin transformation of net.minecraft.client.main.Main failed
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.getPostMixinClassByteArray(KnotClassDelegate.java:441)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.tryLoadClass(KnotClassDelegate.java:337)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.loadClass(KnotClassDelegate.java:232)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassLoader.loadClass(KnotClassLoader.java:119)
+	at java.base/java.lang.ClassLoader.loadClass(Unknown Source)
+	at net.fabricmc.loader.impl.game.minecraft.MinecraftGameProvider.launch(MinecraftGameProvider.java:510)
+	at net.fabricmc.loader.impl.launch.knot.Knot.launch(Knot.java:72)
+	at net.fabricmc.loader.impl.launch.knot.KnotClient.main(KnotClient.java:23)
+	... 4 more
+Caused by: org.spongepowered.asm.mixin.throwables.MixinApplyError: Mixin [nrc-client-color.mixins.json:ModuleThemeEditorMixin from mod nrc-client-color] from phase [DEFAULT] in config [nrc-client-color.mixins.json] FAILED during PREPARE
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.handleMixinError(MixinProcessor.java:685)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.handleMixinPrepareError(MixinProcessor.java:632)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.prepareConfigs(MixinProcessor.java:590)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.select(MixinProcessor.java:509)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.checkSelect(MixinProcessor.java:485)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.lockAndSelect(MixinProcessor.java:437)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.couldTransformClass(MixinProcessor.java:397)
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.couldTransformClass(MixinTransformer.java:265)
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClass(MixinTransformer.java:233)
+	at org.spongepowered.asm.mixin.transformer.MixinTransformer.transformClassBytes(MixinTransformer.java:202)
+	at net.fabricmc.loader.impl.launch.knot.KnotClassDelegate.getPostMixinClassByteArray(KnotClassDelegate.java:436)
+	... 11 more
+Caused by: org.spongepowered.asm.mixin.transformer.throwables.MixinTargetAlreadyLoadedException: Critical problem: nrc-client-color.mixins.json:ModuleThemeEditorMixin from mod nrc-client-color target gg.norisk.ui.api.module.Module was loaded too early.
+	at org.spongepowered.asm.mixin.transformer.MixinInfo.readDeclaredTargets(MixinInfo.java:973)
+	at org.spongepowered.asm.mixin.transformer.MixinInfo.<init>(MixinInfo.java:903)
+	at org.spongepowered.asm.mixin.transformer.MixinConfig.prepareMixins(MixinConfig.java:935)
+	at org.spongepowered.asm.mixin.transformer.MixinConfig.prepare(MixinConfig.java:862)
+	at org.spongepowered.asm.mixin.transformer.MixinProcessor.prepareConfigs(MixinProcessor.java:587)
+	... 19 more
+"
+
+
+Das popup soll immer so wie bei: "D:\NoRiskClient-Addons-Builder\Infomationen-für-die-addons--mods\norisk-popup-example" aussehen.
+
+--------------------------------------------------------------------------------
+Weitere allgemeine NoRisk-Technikinfos (HUD-Zugriff, Editor-Buttons, Mixin-Regeln):
+Siehe: "D:\NoRiskClient-Addons-Builder\Infomationen-für-die-addons--mods\NoRisk_HUD_und_UI_Integration_Wissen.txt"
+
+Kurzfassung der wichtigsten Regeln aus der Praxis:
+- Keine NRC-Klassen (`Module`, `ModuleProvider`) zu frueh im `onInitializeClient` oder per hartem Mixin laden -> erst im ersten `ClientTickEvents.END_CLIENT_TICK` ueber `Class.forName("...NoRiskBridge")` initialisieren (verhindert `MixinTargetAlreadyLoadedException`).
+- Alle NRC-UI-Mixins (`V3RightShiftOverlay`, `RightShiftMenuV3Screen`) immer mit `@Pseudo`, `remap = false` und bei optionalen/Lambda-Targets mit `require = 0` schreiben.
+- HUD-Elemente von NRC ueber `ModuleProvider` + `HudComponentRegistry` auslesen; Vanilla-HUDs ueber `HudElementRegistry.replaceElement(...)`.
+- Buttons in die NRC-UI ueber `Module` (`onLeftClick`, `buildNavbarActions`), `V3RightShiftOverlay.buildIconRow()`, `RightShiftMenuV3Screen` Sidebar (`"emotes"`) und `ModuleCardBadgeMixin` (`§c§lADDON`) einhaengen.
+

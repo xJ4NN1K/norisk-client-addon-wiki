@@ -1,0 +1,32 @@
+{
+  "schemaVersion": 1,
+  "id": "norisk-popup-example",
+  "version": "${version}",
+  "name": "NRC Universal Popup Template",
+  "description": "Standard-Vorlage fuer NoRisk Client Addons. Funktioniert auf allen 26.x Versionen mit Launcher, Standalone, Mini oder Vanilla-Fabric.",
+  "authors": [
+    "NoRisk Addon Developer"
+  ],
+  "license": "MIT",
+  "icon": "icon.png",
+  "environment": "client",
+  "entrypoints": {
+    "client": [
+      "gg.norisk.addon.popup.PopupTemplateMod"
+    ]
+  },
+  "mixins": [
+    "norisk-popup.mixins.json"
+  ],
+  "depends": {
+    "fabricloader": ">=0.19.2",
+    "fabric-api": "*",
+    "minecraft": ">=26.0 <27.0"
+  },
+  "suggests": {
+    "nrcclient": "*",
+    "nrcmini": "*",
+    "nrcstandalone": "*"
+  }
+}
+
