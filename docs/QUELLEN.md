@@ -22,17 +22,6 @@
 
 Versionen von Docs, Templates und Artefakten ändern sich. Prüfe aktuelle Links/Dateien, bevor du ein neues Projekt startest.
 
-## Vom Nutzer bereitgestellte lokale Materialien
+## Quellenpflege
 
-Der ursprüngliche Arbeitsordner enthält weitere Recherche und Beispielprojekte. Diese können konkrete Versionen oder Annahmen voraussetzen und sind keine offiziellen NRC-API-Verträge:
-
-- `How-to-make-a-mod-inside-norisk.md`
-- `NoRisk_HUD_und_UI_Integration_Wissen.txt`
-- `NoRisk_Client_Server_Mappings_Knowledge.md`
-- `NoRiskClient_nrc-configs_Full_Repository_Documentation_EN.md`
-- `Was-ist-Norisk-client.txt`
-- `norisk-popup-example/`
-- weitere Mod-/Launcher-Beispiele in den Unterordnern
-
-Nutze diese Dateien als Fallstudien und gleiche Aussagen mit aktuellen offiziellen Quellen ab. Ein alter Mod-JAR oder eine lokale `libs/`-Datei darf nicht automatisch auf GitHub hochgeladen werden.
-
+Die lokalen Recherchedateien, aus denen Teile dieser Anleitung entstanden sind, bleiben im ursprünglichen Arbeitsordner und sind nicht Teil dieses öffentlichen Repositories. Nutze sie als private Notizen und gleiche versionsabhängige Aussagen mit den oben verlinkten aktuellen Quellen ab. Lade lokale Mod-JARs oder Projektordner nicht ungeprüft in ein öffentliches Repository hoch.
