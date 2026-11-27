@@ -16,7 +16,7 @@ Ein leicht navigierbares Mini-Wiki für eigene Fabric-Mods und NRC-Module. Es en
 
 ## Online-Wiki
 
-GitHub Pages: https://xj4nnik.github.io/norisk-client-addon-wiki/
+GitHub Pages: https://xj4nn1k.github.io/norisk-client-addon-wiki/
 
 ## Wichtiger API-Hinweis
 
